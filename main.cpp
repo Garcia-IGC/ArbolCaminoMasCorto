@@ -59,6 +59,8 @@ int main(){
 
     vector<vector<int>> matAdy = armarMatriz("ejemplos.txt");
 
+    cout<<"A"<<endl;
+
     return 0;
 
 }
