@@ -36,32 +36,54 @@ void imprimirMatriz(vector<vector<int>> mat){
 
 void anadirNodo(Nodo* raiz, Nodo* anadir){
 
+    if(raiz==nullptr || anadir == nullptr){return;}
     raiz->hijos.push_back(anadir);
 
 }
 
 void imprimirArbolMasCorto(Nodo * raiz){
 
-    if(raiz==nullptr){
-        cout<<"FINAL"<<endl;
-        return;
-    }
+    if(raiz==nullptr){return;}
 
     cout<<raiz->ci.first<<", "<<raiz->ci.second<<endl;
 
+    if(raiz->hijos.size()==0){
+        cout<<"FINAL"<<endl;
+    }
+
     for(int i = 0; i<raiz->hijos.size();i++){
-        imprimirArbolMasCorto(raiz);
+        imprimirArbolMasCorto(raiz->hijos[i]);
     }
 
 
 }
+
+
+Nodo* buscarNodo(Nodo* raiz,char caracter, int camino){
+
+    if(raiz==nullptr){return nullptr;}
+    if(raiz->ci.first==caracter && raiz->ci.second==camino){return raiz;}
+
+    Nodo* temp;
+
+    for(int i = 0; i<raiz->hijos.size();i++){
+
+        temp = buscarNodo(raiz->hijos[i],caracter,camino);
+        if(temp!=nullptr){return temp;}
+
+    }
+
+    return nullptr;
+
+}
+
 
 /**
 dijkstra: modifica el vector "menorCamino", y crea el arbol de Shortest Path, camino más corto.
 En este caso el algoritmo recorre un nodo, calcula los caminos de sus vecinos e itera
 sobre el vecino más cercano. Existian otros metodos con "cola de prioridad", sin embargo,
 el metodo que vimos en clase no se parecia a ese algoritmo, el algoritmo que estoy implementando
-me parece mas adecuado y parecido a lo que hemos visto durante el curso
+me parece mas adecuado y aplica lo visto durante el curso
 **/
 void dijkstra(vector<int>& menorCamino, vector<vector<int>>& matAdy,Nodo* raiz){
 
@@ -81,7 +103,7 @@ void dijkstra(vector<int>& menorCamino, vector<vector<int>>& matAdy,Nodo* raiz){
         colaNodos.pop();
         visitados[actual] = true;
         int menor = 2147483647;
-        int indiceMenor = 2147483647;
+        int indiceMenor = -1;
 
         for(int ady = 0; ady<matAdy.size();ady++){
 
@@ -89,24 +111,34 @@ void dijkstra(vector<int>& menorCamino, vector<vector<int>>& matAdy,Nodo* raiz){
 
                 int suma = matAdy[actual][ady] + menorCamino[actual];
 
+                    char caracter = ady+65;
+                    anadirNodo(actualNodo,new Nodo(ady+65,suma));
+
+
                 if(suma < menorCamino[ady]){
                     menorCamino[ady]=suma;
                     
-                    anadirNodo(actualNodo,new Nodo(ady+65,menorCamino[ady]));
-                }
-                if(menorCamino[ady]<menor && visitados[ady] == false){
-                    menor = menorCamino[ady];
-                    indiceMenor = ady;
-
                 }
 
             }
    
         }
-        if(indiceMenor!= 2147483647){
-                cola.push(indiceMenor);
-                colaNodos.push(new Nodo(indiceMenor+65,menorCamino[indiceMenor]));
+        
+        for(int i = 0;i<menorCamino.size();i++){
+            
+            if(menorCamino[i] < menor && visitados[i] == false){
+                menor = menorCamino[i];
+                indiceMenor = i;
+            }
+
         }
+
+        if(indiceMenor != -1) {
+            cola.push(indiceMenor);
+            colaNodos.push(buscarNodo(raiz,indiceMenor+65,menorCamino[indiceMenor]));
+
+        }
+
     }
         
 }
@@ -116,27 +148,28 @@ int main(){
     string nombreTXT;
 
     cout<<"Ingrese el nombre de el Archivo"<<endl;
-    cin>>nombreTXT;
+
+    getline(cin,nombreTXT);
 
     ifstream archivo(nombreTXT);
-    int opcion = 2;
+    string opcion = "2";
 
     while(!archivo){
 
 
-        if(opcion == 2) {cout<<"El archivo no existe"<<endl;}
+        if(opcion == "2") {cout<<"El archivo no existe"<<endl;}
         cout<<"1.- Salir\n2.-Volver a intentar"<<endl;
         
     
-        cin>>opcion;
-        
-        if(opcion==1){
+        getline(cin,opcion);
+
+        if(opcion=="1"){
 
             return 0;
 
-        } else if(opcion == 2){
+        } else if(opcion == "2"){
 
-            cin>>nombreTXT;
+            getline(cin,nombreTXT);
             archivo.close();
             archivo.open(nombreTXT);
 
@@ -200,7 +233,21 @@ int main(){
 
     dijkstra(menorCamino, matAdy, raiz);
 
+
+    
+
+    cout<<endl;
+
+    for(int k = 0; k<menorCamino.size();k++){
+        cout<<menorCamino[k]<<",";
+    }    
+
+    cout<<endl;
+
+    imprimirArbolMasCorto(raiz);
+
     cout<<"¿Donde deseas ir?"<<endl;
+
 
     for(int k = 0; k<menorCamino.size();k++){
 
@@ -214,13 +261,19 @@ int main(){
 
     cout<<endl;
 
-    for(int k = 0; k<menorCamino.size();k++){
-        cout<<menorCamino[k]<<",";
-    }    
+    string objetivo;
 
-    cout<<endl;
+    getline(cin,objetivo);
 
-    imprimirArbolMasCorto(raiz);
+    while(objetivo.size() >= 2 || objetivo[0]<=64 || objetivo[0] >= 91 || objetivo[0] > matAdy.size() + 64){
+
+        cout<<"Opción invalida, porfavor ingrese el Nodo objetivo con el formato, 'A' , 'B', 'C' , etc."<<endl;
+
+        getline(cin,objetivo);
+
+    }
+
+
 
     return 0;
 
