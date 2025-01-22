@@ -8,8 +8,13 @@ using namespace std;
 
 class Nodo{
 
+    public:
     pair<char,int> ci;
     vector<Nodo*> hijos;
+    Nodo(char caracter, int peso){
+        this->ci.first=caracter;
+        this->ci.second=peso;
+    }
 
 };
 
@@ -35,10 +40,34 @@ void anadirNodo(Nodo* raiz, Nodo* anadir){
 
 }
 
-//dijkstra: modifica el vector "menorCamino", y crea el arbol de Shortest Path, camino más corto
+void imprimirArbolMasCorto(Nodo * raiz){
+
+    if(raiz==nullptr){
+        cout<<"FINAL"<<endl;
+        return;
+    }
+
+    cout<<raiz->ci.first<<", "<<raiz->ci.second<<endl;
+
+    for(int i = 0; i<raiz->hijos.size();i++){
+        imprimirArbolMasCorto(raiz);
+    }
+
+
+}
+
+/**
+dijkstra: modifica el vector "menorCamino", y crea el arbol de Shortest Path, camino más corto.
+En este caso el algoritmo recorre un nodo, calcula los caminos de sus vecinos e itera
+sobre el vecino más cercano. Existian otros metodos con "cola de prioridad", sin embargo,
+el metodo que vimos en clase no se parecia a ese algoritmo, el algoritmo que estoy implementando
+me parece mas adecuado y parecido a lo que hemos visto durante el curso
+**/
 void dijkstra(vector<int>& menorCamino, vector<vector<int>>& matAdy,Nodo* raiz){
 
-    stack<int> cola;
+    queue<int> cola;
+    queue<Nodo*> colaNodos;
+    colaNodos.push(raiz);
     vector<int> visitados(matAdy.size(), false);
 
     cola.push(0);
@@ -46,39 +75,40 @@ void dijkstra(vector<int>& menorCamino, vector<vector<int>>& matAdy,Nodo* raiz){
 
     while(!cola.empty()){
 
-        int actual = cola.top();
+        int actual = cola.front();
         cola.pop();
+        Nodo* actualNodo = colaNodos.front();
+        colaNodos.pop();
         visitados[actual] = true;
-        Nodo* actual;
+        int menor = 2147483647;
+        int indiceMenor = 2147483647;
 
-        for(int i= 0; i<matAdy[actual].size();i++){
+        for(int ady = 0; ady<matAdy.size();ady++){
 
-            if(actual!=0){
-                if(matAdy[actual][i] != 0 && matAdy[actual][i] + menorCamino[actual] < menorCamino[i]){
+            if(matAdy[actual][ady] != 0){
 
-                    menorCamino[i] = menorCamino[actual] + matAdy[actual][i];
-                    if(visitados[i] == false) {cola.push(i);}
+                int suma = matAdy[actual][ady] + menorCamino[actual];
 
-                }    
-            } else {
+                if(suma < menorCamino[ady]){
+                    menorCamino[ady]=suma;
+                    
+                    anadirNodo(actualNodo,new Nodo(ady+65,menorCamino[ady]));
+                }
+                if(menorCamino[ady]<menor && visitados[ady] == false){
+                    menor = menorCamino[ady];
+                    indiceMenor = ady;
 
-                if(matAdy[actual][i] != 0){
-                    menorCamino[i] = matAdy[actual][i];
-                    if(visitados[i] == false){cola.push(i);}
                 }
 
             }
-            
-
+   
         }
-
-
+        if(indiceMenor!= 2147483647){
+                cola.push(indiceMenor);
+                colaNodos.push(new Nodo(indiceMenor+65,menorCamino[indiceMenor]));
+        }
     }
-
-
-
-    
-    return;
+        
 }
 
 int main(){
@@ -165,7 +195,7 @@ int main(){
 
     vector<int> menorCamino(matAdy.size(), 2147483647);
     
-    Nodo* raiz = new Nodo();
+    Nodo* raiz = new Nodo(65,0);
 
 
     dijkstra(menorCamino, matAdy, raiz);
@@ -180,10 +210,17 @@ int main(){
         cout<<caracter;
         if(k!=menorCamino.size()-1){cout<<",";}
 
+    }
+
+    cout<<endl;
+
+    for(int k = 0; k<menorCamino.size();k++){
+        cout<<menorCamino[k]<<",";
     }    
 
     cout<<endl;
 
+    imprimirArbolMasCorto(raiz);
 
     return 0;
 
