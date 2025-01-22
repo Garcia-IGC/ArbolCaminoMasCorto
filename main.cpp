@@ -1,3 +1,7 @@
+/*
+Nombre: Ignacio Alejandro García Castillo
+Rut: 21.664.915-K
+ */
 #include <iostream>
 #include <vector>
 #include <queue>
@@ -6,6 +10,7 @@
 
 using namespace std;
 
+//clase Nodo para el Shortest path tree
 class Nodo{
 
     public:
@@ -19,7 +24,7 @@ class Nodo{
 };
 
 
-
+//Funcion utilizada para debug y visulizacion clara de la matriz
 void imprimirMatriz(vector<vector<int>> mat){
 
     for(int i = 0; i<mat.size(); i++){
@@ -34,6 +39,7 @@ void imprimirMatriz(vector<vector<int>> mat){
 
 }
 
+//Funcion para añadir nodos a un nodo dentro de un arbol
 void anadirNodo(Nodo* raiz, Nodo* anadir){
 
     if(raiz==nullptr || anadir == nullptr){return;}
@@ -41,6 +47,7 @@ void anadirNodo(Nodo* raiz, Nodo* anadir){
 
 }
 
+//Función utilizada para debug y visualizacion clara del arbol
 void imprimirArbolMasCorto(Nodo * raiz){
 
     if(raiz==nullptr){return;}
@@ -58,7 +65,11 @@ void imprimirArbolMasCorto(Nodo * raiz){
 
 }
 
-
+/*
+Busca el nodo dentro del arbol Shortest path tree con las caracteristicas otorgadas, utilizado
+principalmente dentro del dijkstra para buscar el nodo "perteneciete" al siguiente indice a 
+explorar dentro del grafo y poder asignar los nodos vecinos
+*/
 Nodo* buscarNodo(Nodo* raiz,char caracter, int camino){
 
     if(raiz==nullptr){return nullptr;}
@@ -78,13 +89,13 @@ Nodo* buscarNodo(Nodo* raiz,char caracter, int camino){
 }
 
 
-/**
+/*
 dijkstra: modifica el vector "menorCamino", y crea el arbol de Shortest Path, camino más corto.
 En este caso el algoritmo recorre un nodo, calcula los caminos de sus vecinos e itera
 sobre el vecino más cercano. Existian otros metodos con "cola de prioridad", sin embargo,
 el metodo que vimos en clase no se parecia a ese algoritmo, el algoritmo que estoy implementando
 me parece mas adecuado y aplica lo visto durante el curso
-**/
+*/
 void dijkstra(vector<int>& menorCamino, vector<vector<int>>& matAdy,Nodo* raiz){
 
     queue<int> cola;
@@ -110,9 +121,8 @@ void dijkstra(vector<int>& menorCamino, vector<vector<int>>& matAdy,Nodo* raiz){
             if(matAdy[actual][ady] != 0){
 
                 int suma = matAdy[actual][ady] + menorCamino[actual];
-
-                    char caracter = ady+65;
-                    anadirNodo(actualNodo,new Nodo(ady+65,suma));
+                char caracter = ady+65;
+                if(actual!=ady){anadirNodo(actualNodo,new Nodo(ady+65,suma));}
 
 
                 if(suma < menorCamino[ady]){
@@ -141,6 +151,26 @@ void dijkstra(vector<int>& menorCamino, vector<vector<int>>& matAdy,Nodo* raiz){
 
     }
         
+}
+
+bool caminoMasCortoA(Nodo* raiz,vector<char>& camino, char objetivo, int objetivoInt, int iteracion){
+
+    if(raiz  == nullptr){return false;}
+
+    camino[iteracion] = raiz->ci.first;
+
+    if(raiz->ci.first == objetivo && raiz->ci.second == objetivoInt){return true;}
+
+    for(int i = 0;i<raiz->hijos.size();i++){
+
+        if(caminoMasCortoA(raiz->hijos[i],camino,objetivo,objetivoInt,iteracion+1)){
+            return true;
+        }
+
+    }
+
+    camino[iteracion] = '@';
+    return false;    
 }
 
 int main(){
@@ -214,7 +244,6 @@ int main(){
 
         if(i<linea.size() && linea[i]==','){i++;}
         int numeroM = stoi(numero);
-        cout<<numeroM<<endl;
         numero = "";
         matAdy[y][x] = numeroM;
         x++;
@@ -224,17 +253,12 @@ int main(){
 
     archivo.close();
 
-    imprimirMatriz(matAdy);
-
     vector<int> menorCamino(matAdy.size(), 2147483647);
     
     Nodo* raiz = new Nodo(65,0);
 
 
     dijkstra(menorCamino, matAdy, raiz);
-
-
-    
 
     cout<<endl;
 
@@ -273,7 +297,30 @@ int main(){
 
     }
 
+    vector<char> camino(matAdy.size(), '@');
 
+
+    int objetivoInt = menorCamino[objetivo[0] - 65];
+
+    cout<<objetivoInt<<endl;
+
+
+    if(buscarNodo(raiz,objetivo[0],objetivoInt) == nullptr){cout<<"No existe un camino hacia "<<objetivo[0]<<endl;
+    } else {
+
+        caminoMasCortoA(raiz,camino,objetivo[0],objetivoInt,0);
+
+        for(int i = 0; i<camino.size();i++){
+
+            cout<<camino[i];
+            if(camino[i]!=objetivo[0]){
+                cout<<"->";
+            } else {i = camino.size();}
+
+        }
+
+    }
+    cout<<endl;
 
     return 0;
 
