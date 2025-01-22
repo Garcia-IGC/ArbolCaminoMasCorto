@@ -29,7 +29,55 @@ void imprimirMatriz(vector<vector<int>> mat){
 
 }
 
+void anadirNodo(Nodo* raiz, Nodo* anadir){
+
+    raiz->hijos.push_back(anadir);
+
+}
+
+//dijkstra: modifica el vector "menorCamino", y crea el arbol de Shortest Path, camino más corto
 void dijkstra(vector<int>& menorCamino, vector<vector<int>>& matAdy,Nodo* raiz){
+
+    stack<int> cola;
+    vector<int> visitados(matAdy.size(), false);
+
+    cola.push(0);
+    menorCamino[0] = 0;
+
+    while(!cola.empty()){
+
+        int actual = cola.top();
+        cola.pop();
+        visitados[actual] = true;
+        Nodo* actual;
+
+        for(int i= 0; i<matAdy[actual].size();i++){
+
+            if(actual!=0){
+                if(matAdy[actual][i] != 0 && matAdy[actual][i] + menorCamino[actual] < menorCamino[i]){
+
+                    menorCamino[i] = menorCamino[actual] + matAdy[actual][i];
+                    if(visitados[i] == false) {cola.push(i);}
+
+                }    
+            } else {
+
+                if(matAdy[actual][i] != 0){
+                    menorCamino[i] = matAdy[actual][i];
+                    if(visitados[i] == false){cola.push(i);}
+                }
+
+            }
+            
+
+        }
+
+
+    }
+
+
+
+    
     return;
 }
 
@@ -114,6 +162,28 @@ int main(){
     archivo.close();
 
     imprimirMatriz(matAdy);
+
+    vector<int> menorCamino(matAdy.size(), 2147483647);
+    
+    Nodo* raiz = new Nodo();
+
+
+    dijkstra(menorCamino, matAdy, raiz);
+
+    cout<<"¿Donde deseas ir?"<<endl;
+
+    for(int k = 0; k<menorCamino.size();k++){
+
+    
+        char caracter = k+65;
+
+        cout<<caracter;
+        if(k!=menorCamino.size()-1){cout<<",";}
+
+    }    
+
+    cout<<endl;
+
 
     return 0;
 
