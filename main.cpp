@@ -66,7 +66,7 @@ void imprimirArbolMasCorto(Nodo * raiz){
 }
 
 /*
-Busca el nodo dentro del arbol Shortest path tree con las caracteristicas otorgadas, utilizado
+Busca un nodo dentro del arbol Shortest path tree con las caracteristicas otorgadas, utilizado
 principalmente dentro del dijkstra para buscar el nodo "perteneciete" al siguiente indice a 
 explorar dentro del grafo y poder asignar los nodos vecinos
 */
@@ -80,7 +80,7 @@ Nodo* buscarNodo(Nodo* raiz,char caracter, int camino){
     for(int i = 0; i<raiz->hijos.size();i++){
 
         temp = buscarNodo(raiz->hijos[i],caracter,camino);
-        if(temp!=nullptr){return temp;}
+        if(temp!=nullptr){return temp;} 
 
     }
 
@@ -90,7 +90,7 @@ Nodo* buscarNodo(Nodo* raiz,char caracter, int camino){
 
 
 /*
-dijkstra: modifica el vector "menorCamino", y crea el arbol de Shortest Path, camino más corto.
+dijkstra: modifica el vector "menorCamino", y genera el arbol de Shortest Path, camino más corto.
 En este caso el algoritmo recorre un nodo, calcula los caminos de sus vecinos e itera
 sobre el vecino más cercano. Existian otros metodos con "cola de prioridad", sin embargo,
 el metodo que vimos en clase no se parecia a ese algoritmo, el algoritmo que estoy implementando
@@ -153,6 +153,10 @@ void dijkstra(vector<int>& menorCamino, vector<vector<int>>& matAdy,Nodo* raiz){
         
 }
 
+/*
+Función recursiva, su principal utilidad es rellenar el vector "camino" con el camino más
+corto hasta el nodo objetivo, todo esto atravez de un recorrido, dfs, dentro del arbol/grafo
+*/
 bool caminoMasCortoA(Nodo* raiz,vector<char>& camino, char objetivo, int objetivoInt, int iteracion){
 
     if(raiz  == nullptr){return false;}
@@ -260,16 +264,6 @@ int main(){
 
     dijkstra(menorCamino, matAdy, raiz);
 
-    cout<<endl;
-
-    for(int k = 0; k<menorCamino.size();k++){
-        cout<<menorCamino[k]<<",";
-    }    
-
-    cout<<endl;
-
-    imprimirArbolMasCorto(raiz);
-
     cout<<"¿Donde deseas ir?"<<endl;
 
 
@@ -287,6 +281,7 @@ int main(){
 
     string objetivo;
 
+
     getline(cin,objetivo);
 
     while(objetivo.size() >= 2 || objetivo[0]<=64 || objetivo[0] >= 91 || objetivo[0] > matAdy.size() + 64){
@@ -302,12 +297,15 @@ int main(){
 
     int objetivoInt = menorCamino[objetivo[0] - 65];
 
-    cout<<objetivoInt<<endl;
 
 
-    if(buscarNodo(raiz,objetivo[0],objetivoInt) == nullptr){cout<<"No existe un camino hacia "<<objetivo[0]<<endl;
+    if(buscarNodo(raiz,objetivo[0],objetivoInt) == nullptr){
+        cout<<"No existe un camino hacia "<<objetivo[0]<<endl;
+        return 0;
     } else {
 
+
+        cout<<objetivoInt<<endl;
         caminoMasCortoA(raiz,camino,objetivo[0],objetivoInt,0);
 
         for(int i = 0; i<camino.size();i++){
