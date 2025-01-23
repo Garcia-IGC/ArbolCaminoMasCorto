@@ -203,6 +203,7 @@ int main(){
 
         } else if(opcion == "2"){
 
+            cout<<"Ingrese el nombre de el Archivo"<<endl;
             getline(cin,nombreTXT);
             archivo.close();
             archivo.open(nombreTXT);
