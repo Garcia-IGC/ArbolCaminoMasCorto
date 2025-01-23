@@ -23,45 +23,11 @@ class Nodo{
 
 };
 
-
-//Funcion utilizada para debug y visulizacion clara de la matriz
-void imprimirMatriz(vector<vector<int>> mat){
-
-    for(int i = 0; i<mat.size(); i++){
-        for(int j = 0; j<mat[0].size();j++){
-
-            cout<<mat[i][j]<<",";
-
-
-        }
-        cout<<endl;
-    }
-
-}
-
 //Funcion para añadir nodos a un nodo dentro de un arbol
 void anadirNodo(Nodo* raiz, Nodo* anadir){
 
     if(raiz==nullptr || anadir == nullptr){return;}
     raiz->hijos.push_back(anadir);
-
-}
-
-//Función utilizada para debug y visualizacion clara del arbol
-void imprimirArbolMasCorto(Nodo * raiz){
-
-    if(raiz==nullptr){return;}
-
-    cout<<raiz->ci.first<<", "<<raiz->ci.second<<endl;
-
-    if(raiz->hijos.size()==0){
-        cout<<"FINAL"<<endl;
-    }
-
-    for(int i = 0; i<raiz->hijos.size();i++){
-        imprimirArbolMasCorto(raiz->hijos[i]);
-    }
-
 
 }
 
@@ -177,11 +143,24 @@ bool caminoMasCortoA(Nodo* raiz,vector<char>& camino, char objetivo, int objetiv
     return false;    
 }
 
+//Metodo para limpiar la memoria del programa
+void liberarMemoria(Nodo* raiz){
+
+    if(raiz == nullptr){return;}
+
+    for(Nodo* hijo:raiz->hijos){
+        liberarMemoria(hijo);
+    }
+
+    delete raiz;
+
+}
+
 int main(){
 
     string nombreTXT;
 
-    cout<<"Ingrese el nombre de el Archivo"<<endl;
+    cout<<"Ingrese el nombre de el Archivo para leer la matriz"<<endl;
 
     getline(cin,nombreTXT);
 
@@ -203,7 +182,7 @@ int main(){
 
         } else if(opcion == "2"){
 
-            cout<<"Ingrese el nombre de el Archivo"<<endl;
+            cout<<"Ingrese el nombre de el Archivo para leer la matriz"<<endl;
             getline(cin,nombreTXT);
             archivo.close();
             archivo.open(nombreTXT);
@@ -223,6 +202,16 @@ int main(){
     int n;
     
     archivo>>n;
+
+    if(n <= 0){
+        cout<<"No hay una matriz dentro del Archivo."<<endl;
+        return 0;
+    }
+
+    if(n > 26){
+        cout<<"La matriz excede el limite esperado(26 X 26, A...Z)."<<endl;
+        return 0;
+    }
 
     getline(archivo,linea);
 
@@ -265,7 +254,7 @@ int main(){
 
     dijkstra(menorCamino, matAdy, raiz);
 
-    cout<<"¿Donde deseas ir?"<<endl;
+    cout<<"¿Donde desea ir?"<<endl;
 
 
     for(int k = 0; k<menorCamino.size();k++){
@@ -287,7 +276,7 @@ int main(){
 
     while(objetivo.size() >= 2 || objetivo[0]<=64 || objetivo[0] >= 91 || objetivo[0] > matAdy.size() + 64){
 
-        cout<<"Opción invalida, porfavor ingrese el Nodo objetivo con el formato, 'A' , 'B', 'C' , etc."<<endl;
+        cout<<"Opción invalida, porfavor ingrese el Nodo objetivo dentro del rango otrogado con el formato, 'A' , 'B', 'C' , etc."<<endl;
 
         getline(cin,objetivo);
 
@@ -319,8 +308,10 @@ int main(){
         }
 
     }
-    cout<<endl;
 
+    liberarMemoria(raiz);
+    cout<<endl;
+    
     return 0;
 
 }
