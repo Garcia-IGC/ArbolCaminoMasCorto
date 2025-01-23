@@ -178,6 +178,7 @@ int main(){
 
         if(opcion=="1"){
 
+            archivo.close();
             return 0;
 
         } else if(opcion == "2"){
@@ -205,11 +206,13 @@ int main(){
 
     if(n <= 0){
         cout<<"No hay una matriz dentro del Archivo."<<endl;
+        archivo.close();
         return 0;
     }
 
     if(n > 26){
         cout<<"La matriz excede el limite esperado(26 X 26, A...Z)."<<endl;
+        archivo.close();
         return 0;
     }
 
