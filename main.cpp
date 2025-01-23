@@ -56,11 +56,11 @@ Nodo* buscarNodo(Nodo* raiz,char caracter, int camino){
 
 
 /*
-dijkstra: modifica el vector "menorCamino", y genera el arbol de Shortest Path, camino más corto.
-En este caso el algoritmo recorre un nodo, calcula los caminos de sus vecinos e itera
-sobre el vecino más cercano. Existian otros metodos con "cola de prioridad", sin embargo,
+dijkstra: modifica el vector "menorCamino", y genera el Shortest Path Tree, camino más corto.
+En este caso el algoritmo recorre un nodo, calcula los caminos de sus vecinos e itera sobre el
+"Nodo"(indice) no visitiado con el camino más corto. Existian otros metodos con "cola de prioridad", sin embargo,
 el metodo que vimos en clase no se parecia a ese algoritmo, el algoritmo que estoy implementando
-me parece mas adecuado y aplica lo visto durante el curso
+me parece mas adecuado y aplica lo visto durante el curso.
 */
 void dijkstra(vector<int>& menorCamino, vector<vector<int>>& matAdy,Nodo* raiz){
 
